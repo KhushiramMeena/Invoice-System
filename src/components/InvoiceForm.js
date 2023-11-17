@@ -89,16 +89,30 @@ class InvoiceForm extends React.Component {
     this.setState(this.state.items);
   }
 
-  // // To calculate the total
+  // // ///////////////////////////////////
+
+  // Function to add an item
+  addItem(item) {
+    // Assuming item is an object with properties like price and quantity
+    const updatedItems = [...this.state.items, item];
+    this.setState({ items: updatedItems }, () => {
+      this.handleCalculateTotal();
+    });
+  }
+
+  // Function to calculate the total
   handleCalculateTotal() {
     var items = this.state.items;
     var subTotal = 0;
 
-    items.map(function (items) {
+    items.map(function (item) {
       subTotal = parseFloat(
-        subTotal + parseFloat(items.price).toFixed(2) * parseInt(items.quantity)
-      ).toFixed(2);
+        subTotal + parseFloat(item.price).toFixed(2) * parseInt(item.quantity)
+      );
+      return null; // Added return to remove the warning for map function
     });
+
+    subTotal = subTotal.toFixed(2);
 
     this.setState(
       {
@@ -121,8 +135,8 @@ class InvoiceForm extends React.Component {
               () => {
                 this.setState({
                   total:
-                    subTotal -
-                    this.state.discountAmmount +
+                    parseFloat(subTotal) -
+                    parseFloat(this.state.discountAmmount) +
                     parseFloat(this.state.taxAmmount),
                 });
               }
@@ -132,34 +146,6 @@ class InvoiceForm extends React.Component {
       }
     );
   }
-
-  // handleCalculateTotal() {
-  //   const { items, taxRate, discountRate } = this.state;
-
-  //   let subTotal = items.reduce(
-  //     (accumulator, currentItem) =>
-  //       accumulator + parseFloat(currentItem.price) * currentItem.quantity,
-  //     0
-  //   );
-
-  //   const taxAmount = parseFloat(subTotal * (taxRate / 100) || 0).toFixed(2);
-  //   const discountAmount = parseFloat(
-  //     subTotal * (discountRate / 100) || 0
-  //   ).toFixed(2);
-
-  //   const total = (
-  //     parseFloat(subTotal || 0) +
-  //     parseFloat(taxAmount) -
-  //     parseFloat(discountAmount)
-  //   ).toFixed(2);
-
-  //   this.setState({
-  //     subTotal: subTotal.toFixed(2),
-  //     taxAmount,
-  //     discountAmount,
-  //     total,
-  //   });
-  // }
 
   // To edit an invoice field
   editField = (event) => {
